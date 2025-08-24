@@ -14,7 +14,7 @@ import {
   FaEnvelope, FaArrowRight, FaArrowDown, FaCommentDots
 } from 'react-icons/fa';
 
-// RegistrationForm component
+// RegistrationForm component (No changes needed, so keeping it as is)
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +26,6 @@ const RegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
 
-  // Define a validation state for interests
   const [interestsError, setInterestsError] = useState(false);
 
   const handleInputChange = (e) => {
@@ -43,8 +42,7 @@ const RegistrationForm = () => {
       const updatedInterests = checked
         ? [...prevData.interests, value]
         : prevData.interests.filter((interest) => interest !== value);
-      
-      // Update validation state
+
       setInterestsError(updatedInterests.length === 0);
 
       return {
@@ -57,7 +55,6 @@ const RegistrationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Custom validation for interests
     if (formData.interests.length === 0) {
       setInterestsError(true);
       setSubmitMessage('Please select at least one Area of Interest.');
@@ -67,16 +64,14 @@ const RegistrationForm = () => {
     setIsSubmitting(true);
     setSubmitMessage('');
 
-    // **Replace this URL with your Google Apps Script Web App URL**
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbwdhSqh1Cw4pTK0tZMlhkVOXEBukgfzXAMGOAylwlgxTt-QqfgxHSvYJUrcjOEfo8bQ/exec';
 
-    // Prepare data for Google Sheets
     const dataToSend = {
       name: formData.name,
       mobileNumber: formData.mobileNumber,
       email: formData.email,
       locality: formData.locality,
-      interests: formData.interests.join(', '), // Join array to a string
+      interests: formData.interests.join(', '),
     };
 
     try {
@@ -98,7 +93,7 @@ const RegistrationForm = () => {
           locality: '',
           interests: [],
         });
-        setInterestsError(false); // Reset error state on success
+        setInterestsError(false);
       } else {
         setSubmitMessage("Failed to submit. Please try again.");
       }
@@ -132,7 +127,6 @@ const RegistrationForm = () => {
         Fill out this form to get involved and learn more.
       </p>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Name Field */}
         <motion.div variants={fadeIn}>
           <label htmlFor="name" className="block text-lg font-medium text-gray-700">Name</label>
           <input
@@ -146,7 +140,6 @@ const RegistrationForm = () => {
           />
         </motion.div>
 
-        {/* Mobile Number Field */}
         <motion.div variants={fadeIn}>
           <label htmlFor="mobileNumber" className="block text-lg font-medium text-gray-700">Mobile Number</label>
           <input
@@ -160,7 +153,6 @@ const RegistrationForm = () => {
           />
         </motion.div>
 
-        {/* Email Field */}
         <motion.div variants={fadeIn}>
           <label htmlFor="email" className="block text-lg font-medium text-gray-700">Email</label>
           <input
@@ -174,7 +166,6 @@ const RegistrationForm = () => {
           />
         </motion.div>
 
-        {/* Locality Field */}
         <motion.div variants={fadeIn}>
           <label htmlFor="locality" className="block text-lg font-medium text-gray-700">Locality</label>
           <input
@@ -188,7 +179,6 @@ const RegistrationForm = () => {
           />
         </motion.div>
 
-        {/* Area of Interest Checkboxes */}
         <motion.div variants={fadeIn}>
           <label className="block text-lg font-medium text-gray-700 mb-2">
             Area of Interest (select one or more)
@@ -225,7 +215,6 @@ const RegistrationForm = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Submit Button */}
         <motion.button
           type="submit"
           whileHover={{ scale: 1.02, y: -2 }}
@@ -258,17 +247,57 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('rss-overview');
 
-  const handleScroll = (e) => {
+  useEffect(() => {
+    const sections = [
+      'rss-overview',
+      'bala-bharathi',
+      'kishora-bharathi',
+      'bhajan-sandhya',
+      'it-milan',
+      'sevika-samithi',
+      'register'
+    ];
+
+    const handleScroll = () => {
+      let currentActive = 'rss-overview';
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i]);
+        if (section) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= window.innerHeight / 2.5) {
+            currentActive = sections[i];
+            break;
+          }
+        }
+      }
+      setActiveSection(currentActive);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleScrollToSection = (e, id) => {
     e.preventDefault();
-    const href = e.currentTarget.href;
-    const targetId = href.replace(/.*#/, "");
-    const elem = document.getElementById(targetId);
+    const elem = document.getElementById(id);
     if (elem) {
       elem.scrollIntoView({
         behavior: "smooth",
+        block: "start"
       });
     }
-    setMenuOpen(false); // Close the menu after clicking
+  };
+
+  // NEW: Function to handle the mobile link click with a delay
+  const handleMobileLinkClick = (e, id) => {
+    setMenuOpen(false); // First, trigger the menu to close
+    setTimeout(() => { // Then, initiate the scroll after a short delay
+      handleScrollToSection(e, id);
+    }, 100); // 100ms delay to allow the menu animation to complete
   };
 
   // Animation variants
@@ -285,6 +314,16 @@ export default function Home() {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
   };
+
+  const navItems = [
+    { name: 'RSS Overview', icon: <FaHistory className="mr-2" />, id: 'rss-overview' },
+    { name: 'Bala Bharathi', icon: <FaChild className="mr-2" />, id: 'bala-bharathi' },
+    { name: 'Kishora Bharathi', icon: <FaUsers className="mr-2" />, id: 'kishora-bharathi' },
+    { name: 'Bhajan Sandhya', icon: <FaMusic className="mr-2" />, id: 'bhajan-sandhya' },
+    { name: 'IT Milan', icon: <FaLaptopCode className="mr-2" />, id: 'it-milan' },
+    { name: 'Sevika Samithi', icon: <FaFemale className="mr-2" />, id: 'sevika-samithi' },
+    { name: 'Register', icon: <FaEnvelope className="mr-2" />, id: 'register' }
+  ];
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 font-sans min-h-screen overflow-x-hidden">
@@ -303,7 +342,7 @@ export default function Home() {
         <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
           <motion.a
             href="#rss-overview"
-            onClick={handleScroll}
+            onClick={(e) => handleScrollToSection(e, 'rss-overview')}
             whileHover={{ scale: 1.05 }}
             className="flex items-center"
           >
@@ -320,33 +359,22 @@ export default function Home() {
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex space-x-4 font-semibold text-lg">
-            {[
-              { name: 'RSS Overview', icon: <FaHistory className="mr-2" /> },
-              { name: 'Bala Bharathi', icon: <FaChild className="mr-2" /> },
-              { name: 'Kishora Bharathi', icon: <FaUsers className="mr-2" /> },
-              { name: 'Bhajan Sandhya', icon: <FaMusic className="mr-2" /> },
-              { name: 'IT Milan', icon: <FaLaptopCode className="mr-2" /> },
-              { name: 'Sevika Samithi', icon: <FaFemale className="mr-2" /> },
-              { name: 'Register', icon: <FaEnvelope className="mr-2" /> }
-            ].map((item, index) => {
-              const id = item.name.toLowerCase().replace(/\s+/g, '-');
-              return (
-                <motion.li
-                  key={index}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+            {navItems.map((item, index) => (
+              <motion.li
+                key={index}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <a
+                  href={`#${item.id}`}
+                  onClick={(e) => handleScrollToSection(e, item.id)}
+                  className={`px-3 py-2 rounded-lg transition-all duration-300 flex items-center ${activeSection === item.id ? 'bg-[#E65911] text-white shadow-lg' : 'text-white hover:text-[#E65911]'}`}
                 >
-                  <a
-                    href={`#${id}`}
-                    onClick={handleScroll}
-                    className={`px-3 py-2 rounded-lg transition-all duration-300 flex items-center ${activeSection === id ? 'bg-[#E65911] text-white shadow-lg' : 'text-white hover:text-[#E65911]'}`}
-                  >
-                    {item.icon}
-                    {item.name}
-                  </a>
-                </motion.li>
-              );
-            })}
+                  {item.icon}
+                  {item.name}
+                </a>
+              </motion.li>
+            ))}
           </ul>
 
           {/* Mobile Hamburger */}
@@ -378,34 +406,23 @@ export default function Home() {
               className="md:hidden bg-[#7c0f00] overflow-hidden"
             >
               <ul className="flex flex-col space-y-3 py-4 px-6">
-                {[
-                  { name: 'RSS Overview', icon: <FaHistory className="mr-3" /> },
-                  { name: 'Bala Bharathi', icon: <FaChild className="mr-3" /> },
-                  { name: 'Kishora Bharathi', icon: <FaUsers className="mr-3" /> },
-                  { name: 'Bhajan Sandhya', icon: <FaMusic className="mr-3" /> },
-                  { name: 'IT Milan', icon: <FaLaptopCode className="mr-3" /> },
-                  { name: 'Sevika Samithi', icon: <FaFemale className="mr-3" /> },
-                  { name: 'Register', icon: <FaEnvelope className="mr-3" /> }
-                ].map((item, index) => {
-                  const id = item.name.toLowerCase().replace(/\s+/g, '-');
-                  return (
-                    <motion.li
-                      key={index}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.1 }}
+                {navItems.map((item, index) => (
+                  <motion.li
+                    key={index}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => handleMobileLinkClick(e, item.id)}
+                      className={`block px-4 py-3 rounded-lg transition-all duration-300 flex items-center ${activeSection === item.id ? 'bg-[#E65911] text-white' : 'text-white hover:bg-[#E65911]/30'}`}
                     >
-                      <a
-                        href={`#${id}`}
-                        onClick={handleScroll}
-                        className={`block px-4 py-3 rounded-lg transition-all duration-300 flex items-center ${activeSection === id ? 'bg-[#E65911] text-white' : 'text-white hover:bg-[#E65911]/30'}`}
-                      >
-                        {item.icon}
-                        {item.name}
-                      </a>
-                    </motion.li>
-                  );
-                })}
+                      {item.icon}
+                      {item.name}
+                    </a>
+                  </motion.li>
+                ))}
               </ul>
             </motion.div>
           )}
@@ -456,7 +473,7 @@ export default function Home() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               href="#rss-overview"
-              onClick={handleScroll}
+              onClick={(e) => handleScrollToSection(e, 'rss-overview')}
               className="px-6 py-3 bg-gradient-to-r from-[#7c0f00] to-[#E65911] text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center"
             >
               Explore Initiatives <FaArrowDown className="ml-2" />
@@ -465,7 +482,7 @@ export default function Home() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               href="#bhajan-sandhya"
-              onClick={handleScroll}
+              onClick={(e) => handleScrollToSection(e, 'bhajan-sandhya')}
               className="px-6 py-3 border-2 border-[#E65911] text-[#7c0f00] rounded-lg font-semibold hover:bg-[#E65911] hover:text-white transition-all duration-300 flex items-center"
             >
               Join Activities <FaArrowRight className="ml-2" />
@@ -476,7 +493,6 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 space-y-32 pb-32">
-
         {/* RSS Overview Section */}
         <motion.section
           id="rss-overview"
@@ -988,24 +1004,21 @@ export default function Home() {
             <div>
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
-                {['RSS Overview', 'Bala Bharathi', 'Kishora Bharathi', 'Bhajan Sandhya', 'IT Milan', 'Sevika Samithi', 'Register'].map((item, index) => {
-                  const id = item.toLowerCase().replace(/\s+/g, '-');
-                  return (
-                    <motion.li
-                      key={index}
-                      whileHover={{ x: 5 }}
-                      transition={{ duration: 0.2 }}
+                {navItems.map((item, index) => (
+                  <motion.li
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <a
+                      href={`#${item.id}`}
+                      onClick={(e) => handleScrollToSection(e, item.id)}
+                      className="text-white/80 hover:text-[#E65911] transition-colors duration-300 flex items-center"
                     >
-                      <a
-                        href={`#${id}`}
-                        onClick={handleScroll}
-                        className="text-white/80 hover:text-[#E65911] transition-colors duration-300 flex items-center"
-                      >
-                        <FaArrowRight className="mr-2 text-sm" /> {item}
-                      </a>
-                    </motion.li>
-                  );
-                })}
+                      <FaArrowRight className="mr-2 text-sm" /> {item.name}
+                    </a>
+                  </motion.li>
+                ))}
               </ul>
             </div>
 
@@ -1016,14 +1029,14 @@ export default function Home() {
                 className="mb-2 flex items-center"
               >
                 <FaEnvelope className="mr-2 text-[#E65911]" />
-                <span>Email: info@rssbro.org</span>
+                <span>Email: info@rss.org</span>
               </motion.div>
               <motion.div
                 whileHover={{ x: 5 }}
                 className="mb-2 flex items-center"
               >
                 <FaPhone className="mr-2 text-[#E65911]" />
-                <span>Phone: +91 XXXXXXXXXX</span>
+                <span>Phone: +91 093437 44988</span>
               </motion.div>
               <motion.div
                 whileHover={{ x: 5 }}
@@ -1036,7 +1049,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-[#E65911]/30 pt-8 text-center">
-            <p>&copy; 2024 RSS Bro. All rights reserved.</p>
+            <p>&copy; 2025 RSS. All rights reserved.</p>
           </div>
         </div>
       </motion.footer>

@@ -1,26 +1,25 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
-import path from "path";
-import { promises as fs } from "fs";
 
 // POST handler
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Load service account key
-    const keyFile = path.join(process.cwd(), "service-account.json");
+    // Use environment variables for service account
     const auth = new google.auth.GoogleAuth({
-      keyFile,
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID; // put your sheet id in .env.local
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
     const timestamp = new Date().toISOString();
 
-    // Column order in Sheet
+    // Column order in your Google Sheet
     const values = [
       [
         body.name || "",
@@ -31,17 +30,15 @@ export async function POST(req: Request) {
         body.age || "",
         (body.interests || []).join(", "),
         body.notes || "",
-        timestamp, // new column for timestamp
+        timestamp,
       ],
     ];
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Sheet1!A:I", // update depending on your sheet col count
+      range: "Sheet1!A:I", // adjust based on your columns
       valueInputOption: "USER_ENTERED",
-      requestBody: {
-        values,
-      },
+      requestBody: { values },
     });
 
     return NextResponse.json({ success: true });

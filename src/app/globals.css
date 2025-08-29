@@ -8,3 +8,6 @@
 #sevika-samithi {
   scroll-margin-top: 96px; /* Adjust this value to match your header's height (24 * 4px = 96px) */
 }
+html {
+  scroll-behavior: smooth;
+}

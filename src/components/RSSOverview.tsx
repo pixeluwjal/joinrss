@@ -19,7 +19,7 @@ const RSSOverview = React.forwardRef<HTMLElement, { id: string }>(({ id }, ref) 
             <FaHistory className="text-3xl md:text-4xl text-white" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-[#7c0f00] mb-3">
-            RSS Overview
+            Overview
           </h2>
           <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
             Rashtriya Swayamsevak Sangh (RSS) is one of the world's largest voluntary organizations, dedicated to nurturing disciplined individuals and building a united, self-reliant, and culturally rooted nation.

@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaArrowRight, FaCheckCircle } from 'react-icons/fa';
-
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +18,7 @@ const RegistrationForm = () => {
   const [submitMessage, setSubmitMessage] = useState('');
   const [interestsError, setInterestsError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const successRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -44,47 +44,64 @@ const RegistrationForm = () => {
     });
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Prevent any default form behavior that might cause scrolling
+    e.stopPropagation();
 
-  if (formData.interests.length === 0) {
-    setInterestsError(true);
-    setSubmitMessage("Please select at least one Area of Interest.");
-    return;
-  }
+    if (formData.interests.length === 0) {
+      setInterestsError(true);
+      setSubmitMessage("Please select at least one Area of Interest.");
+      return;
+    }
 
-  setIsSubmitting(true);
-  setSubmitMessage("");
+    setIsSubmitting(true);
+    setSubmitMessage("");
 
-  try {
-    const response = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    if (!response.ok) throw new Error("Failed to submit");
+      if (!response.ok) throw new Error("Failed to submit");
 
-    setSubmitMessage("Thank you for your interest! We have received your information.");
-    setSubmitted(true);
-    setFormData({
-      name: "",
-      mobileNumber: "",
-      email: "",
-      locality: "",
-      pincode: "",
-      age: "",
-      interests: [],
-      notes: "",
-    });
-    setInterestsError(false);
-  } catch (error) {
-    console.error("Submission error:", error);
-    setSubmitMessage("❌ An error occurred. Please try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      setSubmitMessage("Thank you for your interest! We have received your information.");
+      setSubmitted(true);
+      setFormData({
+        name: "",
+        mobileNumber: "",
+        email: "",
+        locality: "",
+        pincode: "",
+        age: "",
+        interests: [],
+        notes: "",
+      });
+      setInterestsError(false);
+      
+    } catch (error) {
+      console.error("Submission error:", error);
+      setSubmitMessage("❌ An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Scroll to success message when it appears
+  useEffect(() => {
+    if (submitted && successRef.current) {
+      // Use a small timeout to ensure the DOM has updated
+      setTimeout(() => {
+        successRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center'
+        });
+      }, 100);
+    }
+  }, [submitted]);
 
   const areaOfInterestOptions = [
     { label: 'Bala Bharathi (5-12 years)', value: 'bala-bharathi' },
@@ -96,8 +113,8 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   if (submitted) {
     return (
-      <div className="relative bg-white/90 backdrop-blur-md rounded-xl p-10 shadow-2xl border border-white/20">
-        <div className="text-center py-8">
+      <div ref={successRef} className="relative bg-white/90 backdrop-blur-md rounded-xl p-8 md:p-10 shadow-2xl border border-white/20">
+        <div className="text-center py-6 md:py-8">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <FaCheckCircle className="text-green-600 text-3xl" />
@@ -108,8 +125,11 @@ const handleSubmit = async (e: React.FormEvent) => {
             Thank you for your interest! We have received your information and will contact you shortly.
           </p>
           <button
-            onClick={() => setSubmitted(false)}
-            className="px-6 py-3 bg-gradient-to-r from-[#7c0f00] to-[#E65911] text-white rounded-lg font-medium hover:shadow-lg transition-all duration-300"
+            onClick={() => {
+              setSubmitted(false);
+              setSubmitMessage("");
+            }}
+            className="px-6 py-3 bg-gradient-to-r from-[#7c0f00] to-[#E65911] text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300"
           >
             Submit Another Response
           </button>
@@ -119,20 +139,20 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 
   return (
-    <div className="relative bg-white/90 backdrop-blur-md rounded-xl p-8 shadow-2xl border border-white/20">
+    <div className="relative bg-white/90 backdrop-blur-md rounded-xl p-6 md:p-8 shadow-2xl border border-white/20">
       <div className="absolute -inset-4 bg-gradient-to-b from-[#7c0f00]/5 to-[#E65911]/5 rounded-2xl blur-lg opacity-70 -z-10"></div>
       
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[#7c0f00] to-[#E65911] bg-clip-text text-transparent">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#7c0f00] to-[#E65911] bg-clip-text text-transparent">
           Register for Our Initiatives
         </h2>
-        <p className="text-gray-600 mt-3">
+        <p className="text-gray-600 mt-3 text-sm md:text-base">
           Fill out this form to get involved and learn more about our programs.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-2">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Full Name <span className="text-red-500">*</span>
@@ -182,7 +202,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-2">
             <label htmlFor="locality" className="block text-sm font-medium text-gray-700">
               Locality <span className="text-red-500">*</span>

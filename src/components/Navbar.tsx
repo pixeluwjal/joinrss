@@ -119,10 +119,10 @@ const Navbar: React.FC<NavbarProps> = ({ sectionRefs }) => {
           className="flex items-center transition-transform duration-300 hover:scale-105"
         >
           <Image
-            src="/rss-logo.jpg"
+            src="/help.jpg"
             alt="RSS Logo"
-            width={120} // Reduced width
-            height={45} // Reduced height to maintain aspect ratio
+            width={411} // Reduced width
+            height={50} // Reduced height to maintain aspect ratio
             className="h-10 w-auto object-contain" // Slightly smaller Tailwind classes
           />
         </a>

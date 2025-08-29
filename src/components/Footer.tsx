@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { FaFacebook, FaInstagram, FaYoutube, FaEnvelope, FaPhone, FaMapMarkerAlt, FaArrowRight } from './icons';
+import { FaFacebook, FaInstagram, FaYoutube, FaHeart } from 'react-icons/fa';
 
 interface FooterProps {
   handleScrollToSection: (e: React.MouseEvent<HTMLAnchorElement>, id: string) => void;
@@ -14,74 +14,71 @@ const navItems = [
   { name: 'Bhajan Sandhya', id: 'bhajan-sandhya' },
   { name: 'IT Milan', id: 'it-milan' },
   { name: 'Sevika Samithi', id: 'sevika-samithi' },
-  { name: 'Register', id: 'register' }
+  { name: 'Register', id: 'hero' } // Changed 'register' to 'hero'
 ];
 
 const Footer: React.FC<FooterProps> = ({ handleScrollToSection }) => {
   return (
-    <footer className="py-12 bg-gradient-to-b from-[#7c0f00] to-[#5a0c00] text-white">
-      <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+    <footer className="relative py-16 bg-gradient-to-b from-[#7c0f00] to-[#5a0c00] text-white overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E65911] to-transparent opacity-30"></div>
+      <div className="absolute top-10 right-10 w-40 h-40 bg-[#E65911] rounded-full opacity-10"></div>
+      <div className="absolute bottom-10 left-10 w-32 h-32 bg-[#E65911] rounded-full opacity-10"></div>
+      
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid md:grid-cols-2 gap-8 mb-12">
+          {/* Brand Section */}
           <div>
-            <h3 className="text-2xl font-bold text-[#E65911] mb-4 flex items-center">
+            <div className="mb-6">
               <Image
                 src="/rss-logo.jpg"
                 alt="RSS Logo"
                 width={300}
                 height={300}
-                className="mr-2"
+                className="rounded-lg shadow-lg"
               />
-            </h3>
-            <p className="mb-4">Building character, fostering culture, and serving the nation</p>
+            </div>
+            <p className="mb-6 text-white/80 leading-relaxed max-w-md">
+              Building character, fostering culture, and serving the nation through dedicated programs and initiatives.
+            </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-colors duration-300">
-                <FaFacebook className="text-[#E65911] hover:text-white transition-colors duration-300" />
+              <a href="#" className="w-12 h-12 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-all duration-300 transform hover:-translate-y-1 shadow-md">
+                <FaFacebook className="text-xl text-white" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-colors duration-300">
-                <FaInstagram className="text-[#E65911] hover:text-white transition-colors duration-300" />
+              <a href="#" className="w-12 h-12 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-all duration-300 transform hover:-translate-y-1 shadow-md">
+                <FaInstagram className="text-xl text-white" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-colors duration-300">
-                <FaYoutube className="text-[#E65911] hover:text-white transition-colors duration-300" />
+              <a href="#" className="w-12 h-12 rounded-full bg-[#E65911]/20 flex items-center justify-center hover:bg-[#E65911] transition-all duration-300 transform hover:-translate-y-1 shadow-md">
+                <FaYoutube className="text-xl text-white" />
               </a>
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
+            <h4 className="text-xl font-bold mb-6 pb-2 border-b border-[#E65911]/30 inline-block">Quick Links</h4>
+            <div className="grid grid-cols-2 gap-4">
               {navItems.map((item, index) => (
-                <li key={index}>
-                  <a
-                    href={`#${item.id}`}
-                    onClick={(e) => handleScrollToSection(e, item.id)}
-                    className="text-white/80 hover:text-[#E65911] transition-colors duration-300 flex items-center"
-                  >
-                    <FaArrowRight className="mr-2 text-sm" /> {item.name}
-                  </a>
-                </li>
+                <a
+                  key={index}
+                  href={`#${item.id}`}
+                  onClick={(e) => handleScrollToSection(e, item.id)}
+                  className="text-white/80 hover:text-[#E65911] transition-all duration-300 flex items-center group py-2"
+                >
+                  <span className="w-2 h-2 bg-[#E65911] rounded-full mr-3 group-hover:scale-125 transition-transform duration-300"></span>
+                  <span className="group-hover:translate-x-1 transition-transform duration-300 text-sm md:text-base">{item.name}</span>
+                </a>
               ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Contact Information</h4>
-            <div className="mb-2 flex items-center">
-              <FaEnvelope className="mr-2 text-[#E65911]" />
-              <span>Email: info@rss.org</span>
-            </div>
-            <div className="mb-2 flex items-center">
-              <FaPhone className="mr-2 text-[#E65911]" />
-              <span>Phone: +91 093437 44988</span>
-            </div>
-            <div className="flex items-center">
-              <FaMapMarkerAlt className="mr-2 text-[#E65911]" />
-              <span>Address: Bengaluru, Karnataka</span>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-[#E65911]/30 pt-8 text-center">
-          <p>&copy; 2025 RSS. All rights reserved.</p>
+        {/* Bottom Section */}
+        <div className="border-t border-[#E65911]/30 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-white/70 text-sm mb-4 md:mb-0 flex items-center">
+            Made with <FaHeart className="text-[#E65911] mx-1" /> by RSS Volunteers
+          </p>
+          <p className="text-white/70 text-sm">&copy; 2025 RSS. All rights reserved.</p>
         </div>
       </div>
     </footer>
